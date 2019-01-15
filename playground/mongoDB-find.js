@@ -36,7 +36,7 @@ mongoClient.connect('mongodb://localhost:27017/TodoApp',
     // })
 
 var query = db.collection('Users').find()
-.hint( '5c3b6c7d80e30b42c806265b' ).toArray().then((docs)=>{
+.hint( 'age_1' ).toArray().then((docs)=>{
         console.log(JSON.stringify(docs,undefined,2))
     }, (err)=>{
         console.log("Unable to find in Todos " + err)
