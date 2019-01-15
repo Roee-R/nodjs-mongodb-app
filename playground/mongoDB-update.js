@@ -15,11 +15,11 @@ mongoClient.connect('mongodb://localhost:27017/TodoApp',
     var collection = db.collection('Users')
 
     collection.findOneAndUpdate({
-        _id:new ObjectID("5c3b89a2c2d6883514f7527a")
+        _id:new ObjectID("5c3b89a2c2d6883514f7527a")//Search for the objcectID
     },{
        $set:
-            {name: "Haim"},
-       $inc:       
+            {name: "Haim"}, // update the name in to "haim" 
+       $inc:       // incerement the value in 1 
             {age:1}    
         }
         
