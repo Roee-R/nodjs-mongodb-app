@@ -1,5 +1,6 @@
 const express = require('express')
 const body_parser = require('body-parser')
+const objectid = require('mongodb').ObjectID
 
 
 var {mongoose} = require('./db/mongoose') // use destracion
@@ -29,11 +30,27 @@ app.get('/todo', (req,res)=>{
         res.send({todos})
     })
 },(e)=>{
-    res.text(400).send
+    res.text(400).send(console.log("Error"))
+})
+
+app.get('/todo/:id', (req,res)=>{ //:id reperesent the key value of the user sending parameter
+    var id = req.params.id;
+    if(!objectid.isValid(id)){
+        res.status(404).send()
+    }
+
+    todo.findById(id).then((doc)=>{
+        if(doc){
+            res.send({doc})
+        }
+        else{
+            res.status(404).send({})
+        }
+    },(e)=>{res.status(400).send(console.log({}))})
 })
 
 app.listen(3000,()=>{
-    console.log("Stsrt in port 3000")
+    console.log("Start in port 3000")
 })
 
 module.exports={app}
