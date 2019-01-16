@@ -2,7 +2,7 @@ const express = require('express')
 const body_parser = require('body-parser')
 
 
-var {mongoose} = require('./db/moongoose') // use destracion
+var {mongoose} = require('./db/mongoose') // use destracion
 var {user} = require('./models/User') // use destracion
 var {todo} = require('./models/Todos') // use destracion
 
@@ -29,3 +29,4 @@ app.listen(3000,()=>{
     console.log("Stsrt in port 3000")
 })
 
+module.exports={app}
