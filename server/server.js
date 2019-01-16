@@ -24,6 +24,13 @@ app.post('/todo', (req,res)=>{
     })
 })
 
+app.get('/todo', (req,res)=>{
+    todo.find().then((todos)=>{
+        res.send({todos})
+    })
+},(e)=>{
+    res.text(400).send
+})
 
 app.listen(3000,()=>{
     console.log("Stsrt in port 3000")
