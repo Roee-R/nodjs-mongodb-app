@@ -1,11 +1,21 @@
 const expect = require('expect')
 const request = require('supertest')
 
-const {app} = require('./../server/server')
+const {app} = require('./../server/server') // destracture use, import the verible "app"
 const {todo} = require('./../server/models/Todos')
 
+var todosA = [{
+    text: "First test text"   
+},{
+    text: "Second test text"
+},{
+    text: "Third test text"
+}];
+
 beforeEach((done)=>{ // before each post it removes evert textx in db with mongoose
-    todo.remove({}).then(()=>done()) // ES6 synatx
+    todo.remove({}).then(()=>{
+        return todo.insertMany(todosA)
+    }).then(()=>done()) // ES6 synatx
 })
 
 describe('/post todo', ()=>{
@@ -23,7 +33,7 @@ describe('/post todo', ()=>{
                 return console.log(err)
             }
             else{
-                todo.find().then((todos)=>{
+                todo.find({text}).then((todos)=>{
                     expect(todos.length).toBe(1) // check in moongose/todos if there is one text (that we send here)
                     expect(todos[0].text).toBe(text) // check in moongose/todos if the value is our value (that we send here)
                     done() // end the process
@@ -45,10 +55,25 @@ describe('/post todo', ()=>{
             }
             else{
                 todo.find().then((todos)=>{
-                    expect(todos.length).toBe(0) // check in moongose/todos if there is one text (that we send here)
+                    expect(todos.length).toBe(todosA.length) // check in moongose/todos if there is one text (that we send here)
                     done() // end the process
                 }).catch((e)=>{done(e)}) // if one of above failed
             }
         })
     })
 })
+
+
+describe('/get todo', ()=>{
+
+it("should return todos docs",(done)=>{
+
+    request(app)
+    .get("/todo")
+    .expect(200)
+    .expect((res)=>{
+            expect(res.body.todos.length).toBe(todosA.length)
+        }).end(done)
+    })
+})
+
