@@ -39,9 +39,9 @@ app.get('/todo/:id', (req,res)=>{ //:id reperesent the key value of the user sen
         res.status(404).send()
     }
 
-    todo.findById(id).then((doc)=>{
-        if(doc){
-            res.send({doc})
+    todo.findById(id).then((todos)=>{
+        if(todos){
+            res.send({todos})
         }
         else{
             res.status(404).send({})

@@ -1,10 +1,11 @@
 const expect = require('expect')
 const request = require('supertest')
-
+const {ObjectID} = require('mongodb')
 const {app} = require('./../server/server') // destracture use, import the verible "app"
 const {todo} = require('./../server/models/Todos')
 
 var todosA = [{
+    _id : new ObjectID(),
     text: "First test text"   
 },{
     text: "Second test text"
@@ -77,3 +78,36 @@ it("should return todos docs",(done)=>{
     })
 })
 
+
+describe('/get todo/:id', ()=>{
+
+    it("should return todos docs",(done)=>{
+
+        request(app)
+        .get(`/todo/${todosA[0]._id.toHexString()}`) //toHexString - object to string
+        .expect(200)
+        .expect((res)=>{
+                expect(res.body.todos.text).toBe(todosA[0].text)
+            }).end(done)
+        })
+
+        it("should return 404 error if todo not found",(done)=>{
+            request(app)
+            .get(`/todo/${new ObjectID().toHexString()}`)
+            .expect(404)
+            .expect((res)=>{
+                expect(res.body).toEqual({})
+            }).end(done)
+        })
+    
+        it("should return 404 error if id is non-object id",(done)=>{
+            request(app)
+            .get(`/todo/123`)
+            .expect(404)
+            .expect((res)=>{
+                expect(res.body).toEqual({})
+            }).end(done)
+        })
+    })
+
+ 
