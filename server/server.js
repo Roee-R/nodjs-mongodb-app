@@ -74,10 +74,10 @@ app.patch('/todo/:id',(req,res)=>{
     if(!objectid.isValid(id)){
         res.status(404).send("Not valid")
     }
-    
     if(lodash.isBoolean(body.completed) && body.completed){ // check if the user pass: complete as boolean and it equel to true
         body.completedAt = new Date().getTime();
     }else{
+
         body.completedAt=null;
         body.completed=false;
     }
@@ -85,8 +85,9 @@ app.patch('/todo/:id',(req,res)=>{
     // set the update for the specific todo and return the update version (new:true, like returnOriginal: false)
     todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((doc)=>{
         if(!doc){ // set the update for the specific todo
-            return res.status(404).send({});
+            return doc.status(404).send({});
         }
+
         res.status(200).send({doc});
     }).catch((e)=>{
         return res.status(400).send();

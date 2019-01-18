@@ -4,14 +4,16 @@ const {ObjectID} = require('mongodb')
 const {app} = require('./../server/server') // destracture use, import the verible "app"
 const {todo} = require('./../server/models/Todos')
 
-var todosA = [{
+var todosA = [
+    {
     _id : new ObjectID(),
-    text: "First test text"   
-},{
-    text: "Second test text"
-},{
-    text: "Third test text"
-}];
+    text: "Hey first test text!@!!"   
+    },
+    {
+        _id : new ObjectID(),
+        text: "Hey secod test text!@!!",
+        completed: true
+    }];
 
 beforeEach((done)=>{ // before each post it removes evert textx in db with mongoose
     todo.remove({}).then(()=>{
@@ -108,6 +110,36 @@ describe('/get todo/:id', ()=>{
                 expect(res.body).toEqual({})
             }).end(done)
         })
+    })
+
+    describe('PATCH /todo/:id',()=>{
+        it('should update the todo',(done)=>{
+            var id = todosA[0]._id.toHexString()
+            text="Hello world";
+            request(app)
+            .patch(`/todo/${id}`)
+            .send({text, completed:true}) 
+            .expect(200)
+            .expect((todos)=>{
+                expect(todos.body.doc.text).toBe(text)
+                expect(todos.body.doc.completed).toEqual(true)
+                expect(typeof todos.body.doc.completedAt).toBe('number')            
+            }).end(done)
+        })
+        it('should clear completedAt when todo isnt completed',(done)=>{
+            var id = todosA[1]._id.toHexString()
+            text="Hello world";
+            request(app)
+          .patch(`/todo/${id}`) 
+          .expect(200)
+          .send({completed:false, text})
+          .expect((todos)=>{
+              expect(todos.body.doc.text).toBe(text)
+              expect(todos.body.doc.completed).toEqual(false)
+              expect(todos.body.doc.completedAt).toBeNull()
+          }).end(done) 
+        })
+        
     })
 
  
