@@ -4,7 +4,7 @@ mongoose.Promise=global.Promise // tell mongoose that we use promises
 
 // mongoose maintanig the connection over time
 // this method below connect to our local db or from mLab DB
-mongoose.connect('mongodb://Roee_R:roi199115@ds161144.mlab.com:61144/todo'
+mongoose.connect('mongodb://Roee_R:roi199115@@ds161024.mlab.com:61024/test-db'
 || 'mongodb://localhost:27017/TodoApp' ,{ useNewUrlParser: true })
 
 
