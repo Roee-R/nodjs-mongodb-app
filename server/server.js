@@ -3,14 +3,15 @@ const body_parser = require('body-parser')
 const objectid = require('mongodb').ObjectID
 const lodash = require('lodash')
 
+
+var config = require('./config/config.js')
 var {mongoose} = require('./db/mongoose') // use destracion
 var {user} = require('./models/User') // use destracion
 var {todo} = require('./models/Todos') // use destracion
 
-
 var app = express()
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT;
 
 app.use(body_parser.json()) // Returns middleware that only parses 
 //json and only looks at requests where the Content-Type
