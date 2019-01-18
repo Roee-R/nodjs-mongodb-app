@@ -10,6 +10,8 @@ var {todo} = require('./models/Todos') // use destracion
 
 var app = express()
 
+const port = process.env.PORT || 3000
+
 app.use(body_parser.json()) // Returns middleware that only parses 
 //json and only looks at requests where the Content-Type
 // header matches the type option
@@ -49,8 +51,8 @@ app.get('/todo/:id', (req,res)=>{ //:id reperesent the key value of the user sen
     },(e)=>{res.status(400).send(console.log({}))})
 })
 
-app.listen(3000,()=>{
-    console.log("Start in port 3000")
+app.listen(port,()=>{
+    console.log(`Start in port ${port}`)
 })
 
 module.exports={app}

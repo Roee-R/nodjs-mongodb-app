@@ -9,13 +9,13 @@ var id = '5c3e3cb43482dc43502b7f10';
 // }
 
 
-user.findOne().then((users)=>{
+user.findOne().then((users)=>{ // find users and return the first result
     console.log(JSON.stringify(users,undefined,2))
 }).catch((e)=>{console.log(e)})
 
-// user.findById(id).then((user)=>{
-//     if(!user){
-//         return console.log('Id not found') // check if the id is in the collection
-//     }
-//     console.log('User by id: '+user);
-// }).catch((e)=>{console.log(`Ilegal userID ${e}`)}) // check if the id is legaly valid
+user.findById(id).then((user)=>{ // find user by unique id
+    if(!user){
+        return console.log('Id not found') // check if the id is in the collection
+    }
+    console.log('User by id: '+user);
+}).catch((e)=>{console.log(`Ilegal userID ${e}`)}) // check if the id is legaly valid
