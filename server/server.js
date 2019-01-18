@@ -1,7 +1,7 @@
 const express = require('express')
 const body_parser = require('body-parser')
 const objectid = require('mongodb').ObjectID
-
+const lodash = require('lodash')
 
 var {mongoose} = require('./db/mongoose') // use destracion
 var {user} = require('./models/User') // use destracion
@@ -49,6 +49,48 @@ app.get('/todo/:id', (req,res)=>{ //:id reperesent the key value of the user sen
             res.status(404).send({})
         }
     },(e)=>{res.status(400).send(console.log({}))})
+})
+
+app.delete('/todo/:id',(req,res)=>{
+    var id = req.params.id; // takes the id parameter from the url
+    if(!objectid.isValid(id)){
+        res.status(404).send("Not valid")
+    }
+    todo.findByIdAndDelete(id).then((todos)=>{
+        if(!todos){
+            return res.status(404).send("Not found")
+        }
+        return res.status(200).send(todos)
+    }).catch((e)=>{
+        console.log(e)
+    })
+
+})
+
+app.patch('/todo/:id',(req,res)=>{
+    var id = req.params.id;
+    var body = lodash.pick(req.body,['text', 'completed']) // lodash feature-takes from the user just the text and complte parameters
+
+    if(!objectid.isValid(id)){
+        res.status(404).send("Not valid")
+    }
+    
+    if(lodash.isBoolean(body.completed) && body.completed){ // check if the user pass: complete as boolean and it equel to true
+        body.completedAt = new Date().getTime();
+    }else{
+        body.completedAt=null;
+        body.completed=false;
+    }
+
+    // set the update for the specific todo and return the update version (new:true, like returnOriginal: false)
+    todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((doc)=>{
+        if(!doc){ // set the update for the specific todo
+            return res.status(404).send({});
+        }
+        res.status(200).send({doc});
+    }).catch((e)=>{
+        return res.status(400).send();
+    })
 })
 
 app.listen(port,()=>{
