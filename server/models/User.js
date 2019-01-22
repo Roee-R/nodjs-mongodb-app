@@ -78,7 +78,7 @@ userSchema.pre('save', function (next) { // (middleware function) activated afte
     if(user.isModified('password')){
         bcrypt.genSalt(10, (err, salt)=>{ 
             bcrypt.hash(user.password,salt, (err, hash)=>{
-                user.password = hash;
+                user.password = hash; // overide the real pass with the hash password
                 next(); 
             })
         })

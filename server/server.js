@@ -100,13 +100,12 @@ app.post('/users',(req,res)=>{
     var body = lodash.pick(req.body,['email', 'password'])
     var newUser = new User(body)
     newUser.save().then(()=>{
-        console.log('user in /users: ', newUser)
         return newUser.generateAuthToken() //since we expected chain promise (then())
         // res.send(user)
     }).then((token)=>{ // the token in User.js with promise
         res.header('x-auth', token).send(newUser.getJson()) // set header to our res
     }).catch((e)=>{
-        console.log(`hello world : ${body.email}`+e)
+        console.log(`${body.email},  ${e}`)
     })
 })
 
