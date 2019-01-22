@@ -2,8 +2,9 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const _ = require('lodash')
 const jwt = require('jsonwebtoken') // module for web - more friendly
- 
-var userSchema = new mongoose.Schema({ //User is the new collection
+const bcrypt = require('bcryptjs') //  password hashing module
+
+var userSchema = new mongoose.Schema({ //User is the new collection with methods
     email:{
         type: String,
         required: true, // required varible
@@ -70,6 +71,22 @@ userSchema.statics.findOneByToken = function (token){
         'tokens.access': 'auth' // check the access
     })
 }
-var User = mongoose.model('User' ,userSchema)
+
+userSchema.pre('save', function (next) { // (middleware function) activated after save functions need to be run and before they actuly executed 
+    var user = this;
+
+    if(user.isModified('password')){
+        bcrypt.genSalt(10, (err, salt)=>{ 
+            bcrypt.hash(user.password,salt, (err, hash)=>{
+                user.password = hash;
+                next(); 
+            })
+        })
+    }
+    else{
+        next();
+    }
+})
+var User = mongoose.model('User' ,userSchema) // if just model that not include userSchema , created it without method
 
 module.exports={User}
