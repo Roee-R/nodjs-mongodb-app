@@ -6,8 +6,9 @@ const lodash = require('lodash')
 
 var config = require('./config/config.js')
 var {mongoose} = require('./db/mongoose') // use destracion
-var {user} = require('./models/User') // use destracion
+var {User} = require('./models/User') // use destracion
 var {todo} = require('./models/Todos') // use destracion
+const {authenticate} = require('./middleware/authenticate.js')
 
 var app = express()
 
@@ -95,6 +96,24 @@ app.patch('/todo/:id',(req,res)=>{
     })
 })
 
+app.post('/users',(req,res)=>{
+    var body = lodash.pick(req.body,['email', 'password'])
+    var newUser = new User(body)
+    newUser.save().then(()=>{
+        console.log('user in /users: ', newUser)
+        return newUser.generateAuthToken() //since we expected chain promise (then())
+        // res.send(user)
+    }).then((token)=>{ // the token in User.js with promise
+        res.header('x-auth', token).send(newUser.getJson()) // set header to our res
+    }).catch((e)=>{
+        console.log(`hello world : ${body.email}`+e)
+    })
+})
+
+
+app.get('/users/me', authenticate,(req,res)=>{
+    res.send(req.user);
+})
 app.listen(port,()=>{
     console.log(`Start in port ${port}`)
 })
