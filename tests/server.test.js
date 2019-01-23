@@ -10,8 +10,8 @@
     const {populateTodos, todosA, users,populateUsers} 
     = require('./seed/seed'); // insert data into the test DB
     
-    beforeEach(populateUsers);
-    beforeEach(populateTodos);
+    beforeEach(populateUsers); // make the insert
+    beforeEach(populateTodos); // make the insert
 
     describe('/post todo', ()=>{
         it('should create new todo',(done)=>{

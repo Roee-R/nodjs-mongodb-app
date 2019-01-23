@@ -2,6 +2,7 @@ const express = require('express')
 const body_parser = require('body-parser')
 const objectid = require('mongodb').ObjectID
 const lodash = require('lodash')
+const bcrypt = require('bcryptjs') //  password hashing module
 
 
 var config = require('./config/config.js')
@@ -87,7 +88,7 @@ app.patch('/todo/:id',(req,res)=>{
     // set the update for the specific todo and return the update version (new:true, like returnOriginal: false)
     todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((doc)=>{
         if(!doc){ // set the update for the specific todo
-            return doc.status(404).send({});
+            return res.status(404).send({});
         }
 
         res.status(200).send({doc});
@@ -107,6 +108,16 @@ app.post('/users',(req,res)=>{
     }).catch((e)=>{
         console.log(`${body.email},  ${e}`)
     })
+})
+
+app.post('/users/login',(req,res)=>{
+    var body = lodash.pick(req.body,['email', 'password'])
+    
+    User.findByCredentials(body.email,body.password).then((user)=>{
+        res.status(200).send(user.getJson());
+
+    }).catch((e)=>{res.status(400).send()})
+
 })
 
 

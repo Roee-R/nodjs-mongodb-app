@@ -72,6 +72,26 @@ userSchema.statics.findOneByToken = function (token){
     })
 }
 
+userSchema.statics.findByCredentials = function(email, password){ // find user from the db by providing email and pass
+    var User=this;
+    return User.findOne({email})
+    .then((user)=>{
+        if(!user){ //user not exist
+            return Promise.reject()
+        }
+        return new Promise((resolve,reject)=>{ // designed promise because bcrypt not support promises 
+            bcrypt.compare(password, user.password, function(err, res) { // check if the pass from the user equel to the hash pass from db
+                if (!res){
+                     reject() // pass not correct
+                }
+                else
+                {resolve(user)}
+            })
+        })
+
+    })
+
+}
 userSchema.pre('save', function (next) { // (middleware function) activated after save functions need to be run and before they actuly executed 
     var user = this;
 
