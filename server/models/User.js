@@ -56,6 +56,16 @@ userSchema.methods.generateAuthToken = function () { //the reason wenot use arro
     })
 }
 
+
+userSchema.methods.removeToken = function (token){
+    var user = this;
+
+    return user.update({ // update document
+        $pull: { // removes some value of nested varible
+            tokens:{token} // like token: token
+        }
+    })
+}
 userSchema.statics.findOneByToken = function (token){
     var User = this; //we use User when it static varible
     var decoded;

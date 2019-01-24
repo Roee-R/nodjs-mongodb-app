@@ -121,7 +121,16 @@ app.post('/users/login',(req,res)=>{
 
 
 app.get('/users/me', authenticate,(req,res)=>{
-    res.send(req.user);
+    res.send(req.user.getJson());
+})
+
+app.delete('/users/me/token',authenticate, (req,res)=>{  // delete user by x-auth: token
+    //authenticate- to authenticate and get the user token
+    req.user.removeToken(req.token).then(()=>{
+        res.status(200).send();
+    }).catch((e)=>{
+        res.status(400).send();
+    })
 })
 app.listen(port,()=>{
     console.log(`Start in port ${port}`)

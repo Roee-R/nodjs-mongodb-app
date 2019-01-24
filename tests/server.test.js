@@ -104,6 +104,18 @@
             })
         })
     
+        describe('DELETE /todos/:id', () => {
+            // it('should remove a todo', (done) => {
+            // });
+          
+            // it('should return 404 if todo not found', (done) => {
+
+            // });
+          
+            // it('should return 404 if object id is invalid', (done) => {
+            // });
+          });
+          
         describe('PATCH /todo/:id',()=>{
             it('should update the todo',(done)=>{
                 var id = todosA[0]._id.toHexString()

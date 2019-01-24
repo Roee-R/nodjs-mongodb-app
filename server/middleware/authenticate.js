@@ -4,14 +4,16 @@ var authenticate = (req,res,next) => {
     var token = req.header('x-auth');
 
     User.findOneByToken(token).then((user)=>{
+        console.log("token:", user)
+
         if(!user){
             return Promise.reject()
         }
-        req.user= {"_id": user.id, "email":user.email};
+        req.user= user;
         req.token=token;
-        next();
+        next();                                             
     }).catch((e)=>{
-        res.status(401).send(console.log({}))
+        res.status(401).send(console.log(e))
     })
 }
 
