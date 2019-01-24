@@ -85,7 +85,9 @@ userSchema.statics.findByCredentials = function(email, password){ // find user f
                      reject() // pass not correct
                 }
                 else
-                {resolve(user)}
+                {
+                    resolve(user)
+                }
             })
         })
 
@@ -107,6 +109,6 @@ userSchema.pre('save', function (next) { // (middleware function) activated afte
         next();
     }
 })
-var User = mongoose.model('User' ,userSchema) // if just model that not include userSchema , created it without method
+var User = mongoose.model('User' ,userSchema) //witouth userSchema: it just model that dont have methods
 
 module.exports={User}

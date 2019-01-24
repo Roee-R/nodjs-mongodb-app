@@ -105,16 +105,15 @@ app.post('/users',(req,res)=>{
         // res.send(user)
     }).then((token)=>{ // the token in User.js with promise
         res.header('x-auth', token).send(newUser.getJson()) // set header to our res
-    }).catch((e)=>{
-        console.log(`${body.email},  ${e}`)
-    })
+    }).catch((e)=>{res.status(400).send()})
 })
 
 app.post('/users/login',(req,res)=>{
     var body = lodash.pick(req.body,['email', 'password'])
-    
-    User.findByCredentials(body.email,body.password).then((user)=>{
-        res.status(200).send(user.getJson());
+    User.findByCredentials(body.email,body.password).then((user)=>{ // findes the user
+        user.generateAuthToken().then((token)=>{ // Because we relogin so we want to differ logins from several devices
+            res.status(200).header('x-auth', token).send(user.getJson());
+        })
 
     }).catch((e)=>{res.status(400).send()})
 

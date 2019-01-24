@@ -159,6 +159,7 @@
         })
 
         describe('POST /users',()=>{
+            
             it('should create a new user',(done)=>{
                 var email = 'yosi123@gmail.com';
                 var password = 'asd12345';
@@ -183,7 +184,7 @@
                     }).catch((e)=>done(e))
                 })
             })
-
+            
             it('should return validation error if request invalid',(done)=>{
                 var password = 'asd';
                 var email = 'yosi123gmail.com'
@@ -192,14 +193,67 @@
                 .post('/users')
                 .send({email,password})
                 .expect(400)
-                .end(done()) 
+                .end(done) 
             })
 
+           
             it('should not create a user if email in use',(done)=>{
                 request(app)
                 .post('/users')
                 .send({email:'Hen123@gmail.com', password:123123123})
                 .expect(400)
-                .end(done())
+                .end(done)
+            })
+           
+        })
+
+        
+
+    describe('POST /users/login', ()=>{
+        it('should login user and return token',(done)=>{
+                
+            request(app)
+            .post('/users/login')
+            .send({email: users[1].email , password: users[1].password}) // send the username from the seed.js user array
+            .expect(200)
+            .expect((res)=>{
+                expect(res.headers).toHaveProperty(['x-auth']); // check if header x-auth is set
+            })
+            .end((err,res)=>{
+                if(err){
+                    return done(err);
+                }
+
+                User.findById(users[1]._id).then((user)=>{
+                    expect(user.tokens[0]).toHaveProperty('access','auth')
+                    expect(user.tokens[0]).toHaveProperty('token',res.headers['x-auth'])
+                    console.log('user email:', users[1].email)
+                    done();
+                }).catch((e)=>done(e));
             })
         })
+
+        
+        it('should reject invalid login',(done)=>{
+            request(app)
+            .post('/users/login')
+            .send({
+                email: users[0].email,
+                password: 'asdasdwqasf'
+            })
+            .expect(400)
+            .expect((res)=>{
+                expect(res.headers).not.toHaveProperty(['x-auth']); // check if header x-auth is set
+            })
+            .end((err,res)=>{
+                if(err){
+                    return done(err)
+                }
+                User.findById(users[1]._id).then((user)=>{
+                    expect(user.tokens).not.toHaveProperty('token');
+                    done();
+                }).catch((e)=>done(e))
+
+            })
+        })
+    })
