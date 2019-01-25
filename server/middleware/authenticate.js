@@ -4,8 +4,6 @@ var authenticate = (req,res,next) => {
     var token = req.header('x-auth');
 
     User.findOneByToken(token).then((user)=>{
-        console.log("token:", user)
-
         if(!user){
             return Promise.reject()
         }
