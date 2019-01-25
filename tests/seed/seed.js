@@ -9,20 +9,28 @@ const {User} = require('./../../server/models/User')
 // populate functions for users
 var userOneObjectId= new ObjectID();
 var userTwoObjectId= new ObjectID();
+var userThreeObjectId= new ObjectID();
 
-const users = [{
+const users = [
+{
     _id: userOneObjectId,
-    email: 'RoeeR@gmail.com',
-    password: 'userOnePass',
+    email: 'Hen123@gmail.com',
+    password: 'userTwoPass',
     tokens: [{
         access: 'auth',
-        token: jwt.sign({_id:userOneObjectId, access: 'auth'},'abc123')
+        token: jwt.sign({"_id":userOneObjectId, "access": 'auth'},process.env.JWT_SECRET)
     }]
-},{
+},
+{
     _id: userTwoObjectId,
-    email: 'Hen123@gmail.com',
-    password: 'userTwoPass'
-}]
+    email: 'haim@gmail.com',
+    password: 'userFreePass',
+    tokens: [{
+        access: 'auth',
+        token: jwt.sign({_id:userTwoObjectId, access: 'auth'},process.env.JWT_SECRET)
+    }]
+}
+]
 
 
 const populateUsers = ((done)=>{
@@ -38,21 +46,23 @@ const populateUsers = ((done)=>{
 var todosA = [
     {
     _id : new ObjectID(),
-    text: "Hey first test text!@!!"   
+    text: "Hey first test text!@!!",
+    creatorId : userOneObjectId   
     },
     {
         _id : new ObjectID(),
         text: "Hey secod test text!@!!",
-        completed: true
+        completed: true,
+        creatorId : userTwoObjectId  
     }];
 
 
-    const populateTodos = (done) =>{
+    const populateTodos = ((done) =>{
  // before each post it removes every text in db with mongoose and insert the todoA array
             todo.remove({}).then(()=>{
                 return todo.insertMany(todosA)
             }).then(()=>done()) // ES6 synatx
-    }
+    })
 
     module.exports = {populateTodos,todosA,users,populateUsers}
 

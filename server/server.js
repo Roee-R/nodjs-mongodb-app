@@ -19,9 +19,10 @@ app.use(body_parser.json()) // Returns middleware that only parses
 //json and only looks at requests where the Content-Type
 // header matches the type option
 
-app.post('/todo', (req,res)=>{
+app.post('/todo', authenticate, (req,res)=>{ // post some todo (byID) and return it
     var newTodo = new todo({
-        text: req.body.text
+        text: req.body.text,
+        creatorId: req.user._id
     })
     newTodo.save().then((doc)=>{
         res.send(doc)
@@ -30,21 +31,26 @@ app.post('/todo', (req,res)=>{
     })
 })
 
-app.get('/todo', (req,res)=>{
-    todo.find().then((todos)=>{
+app.get('/todo', authenticate, (req,res)=>{ // get all todos (for specific id)
+    todo.find({
+       creatorId: req.user._id
+    }).then((todos)=>{
         res.send({todos})
     })
 },(e)=>{
     res.text(400).send(console.log("Error"))
 })
 
-app.get('/todo/:id', (req,res)=>{ //:id reperesent the key value of the user sending parameter
+app.get('/todo/:id',authenticate, (req,res)=>{ //:id reperesent the key value of the user sending parameter
     var id = req.params.id;
     if(!objectid.isValid(id)){
         res.status(404).send()
     }
 
-    todo.findById(id).then((todos)=>{
+    todo.findOne({
+        _id: id,
+        creatorId: req.user._id
+    }).then((todos)=>{
         if(todos){
             res.send({todos})
         }
@@ -54,14 +60,19 @@ app.get('/todo/:id', (req,res)=>{ //:id reperesent the key value of the user sen
     },(e)=>{res.status(400).send(console.log({}))})
 })
 
-app.delete('/todo/:id',(req,res)=>{
+app.delete('/todo/:id',authenticate, (req,res)=>{
     var id = req.params.id; // takes the id parameter from the url
+
     if(!objectid.isValid(id)){
         res.status(404).send("Not valid")
-    }
-    todo.findByIdAndDelete(id).then((todos)=>{
+    }   
+
+    todo.findOneAndRemove({
+        _id: id,
+        creatorId: req.user._id
+    }).then((todos)=>{
         if(!todos){
-            return res.status(404).send("Not found")
+            return res.status(404).send("todo Not found")
         }
         return res.status(200).send(todos)
     }).catch((e)=>{
@@ -70,7 +81,7 @@ app.delete('/todo/:id',(req,res)=>{
 
 })
 
-app.patch('/todo/:id',(req,res)=>{
+app.patch('/todo/:id', authenticate, (req,res)=>{
     var id = req.params.id;
     var body = lodash.pick(req.body,['text', 'completed']) // lodash feature-takes from the user just the text and complte parameters
 
@@ -84,9 +95,11 @@ app.patch('/todo/:id',(req,res)=>{
         body.completedAt=null;
         body.completed=false;
     }
-
     // set the update for the specific todo and return the update version (new:true, like returnOriginal: false)
-    todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((doc)=>{
+    todo.findOneAndUpdate({
+        _id: id,
+        creatorId: req.user._id
+    }, {$set: body}, {new: true}).then((doc)=>{
         if(!doc){ // set the update for the specific todo
             return res.status(404).send({});
         }

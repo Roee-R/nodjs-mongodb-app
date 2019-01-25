@@ -45,7 +45,7 @@ userSchema.methods.generateAuthToken = function () { //the reason wenot use arro
     var user = this;
     var access = 'auth';
     // generate the token
-    var token = jwt.sign({_id: user._id.toHexString()},'abc123').toString()
+    var token = jwt.sign({_id: user._id.toHexString()},process.env.JWT_SECRET).toString() //process.env.JWT_SECRET is from config folder
     user.tokens=user.tokens.concat([{access, token}]) // maby need to replace it with
     // user.tokens.push({access,token})) 
     
@@ -71,9 +71,9 @@ userSchema.statics.findOneByToken = function (token){
     var decoded;
 
     try{
-        decoded= jwt.verify(token,'abc123');
+        decoded= jwt.verify(token,process.env.JWT_SECRET);
     }catch (e) {
-        return Promise.reject("Failed to decoded") // shorted version of Promise
+        return Promise.reject("C'ant find Token") // shorted version of Promise
     }
     return User.findOne({ // look for the user from the token
         '_id':decoded._id, // check for the right id
@@ -105,6 +105,7 @@ userSchema.statics.findByCredentials = function(email, password){ // find user f
 
 }
 userSchema.pre('save', function (next) { // (middleware function) activated after save functions need to be run and before they actuly executed 
+    // used to encrypt the password bebore making a user (user.isModified('password'))
     var user = this;
 
     if(user.isModified('password')){
